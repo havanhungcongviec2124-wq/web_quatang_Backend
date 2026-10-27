@@ -1,0 +1,5 @@
+Username
+havanhung10a2_db_user
+
+Password
+UMMSqGLU2qdHCOzz
