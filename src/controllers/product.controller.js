@@ -1,5 +1,24 @@
 const mongoose = require('mongoose');
 const Product = require('../models/product.model');
+const { OCCASIONS, PRICE_RANGES, GIFT_TYPES } = require('../utils/seeder');
+
+// Lấy metadata bộ lọc quà tặng (occasions, price ranges, gift types)
+const getProductMeta = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      occasions: OCCASIONS,
+      priceRanges: PRICE_RANGES,
+      giftTypes: GIFT_TYPES,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy metadata sản phẩm',
+      error: err.message,
+    });
+  }
+};
 
 // Lấy danh sách sản phẩm với bộ lọc & sắp xếp
 const getProducts = async (req, res) => {
@@ -222,6 +241,7 @@ const deleteProduct = async (req, res) => {
 };
 
 module.exports = {
+  getProductMeta,
   getProducts,
   getProductById,
   createProduct,
