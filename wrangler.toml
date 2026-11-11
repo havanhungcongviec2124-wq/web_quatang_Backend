@@ -16,7 +16,8 @@ class_name = "BackendDO"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["BackendDO"]
+# Free plan bắt buộc dùng new_sqlite_classes (DO backed bằng SQLite)
+new_sqlite_classes = ["BackendDO"]
 
 # Bật Workers Logs (xem log request/lỗi ngay trên dashboard)
 [observability]
