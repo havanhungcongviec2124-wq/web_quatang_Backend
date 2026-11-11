@@ -1,0 +1,15 @@
+# Phụ thuộc
+node_modules/
+
+# Biến môi trường / bí mật — KHÔNG commit lên git
+.env
+.env.*
+.dev.vars
+
+# Cloudflare Wrangler
+.wrangler/
+.dev.vars.*
+
+# Build output
+dist/
+*.log

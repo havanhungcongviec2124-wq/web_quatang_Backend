@@ -1,0 +1,32 @@
+# Cấu hình Cloudflare Workers cho backend LUXE STORE
+# Tên Worker trùng với Worker đã tạo trên dashboard (web-quatang-backend)
+name = "web-quatang-backend"
+main = "worker.js"
+
+# nodejs_compat: cho phép chạy Express 5 + Mongoose (node:net, node:tls, node:http...)
+# Compat date >= 2025-09-01 là yêu cầu để chạy Node HTTP server (cloudflare:node)
+compatibility_date = "2026-08-04"
+compatibility_flags = ["nodejs_compat"]
+
+# Durable Object giữ app Express + connection MongoDB sống giữa các request
+# (Workers không tái sử dụng I/O giữa các request nên bắt buộc cần DO cho MongoDB)
+[[durable_objects.bindings]]
+name = "BACKEND"
+class_name = "BackendDO"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["BackendDO"]
+
+# Bật Workers Logs (xem log request/lỗi ngay trên dashboard)
+[observability]
+enabled = true
+
+# Biến môi trường (không nhạy cảm) có thể khai báo ở đây, ví dụ:
+# [vars]
+# PORT = "3000"
+#
+# Còn MONGO_URI và SECRET_KEY là bí mật → set qua dashboard:
+# Worker → Settings → Variables and Secrets, hoặc:
+#   npx wrangler secret put MONGO_URI
+#   npx wrangler secret put SECRET_KEY

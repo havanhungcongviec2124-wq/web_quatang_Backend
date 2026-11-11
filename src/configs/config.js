@@ -1,18 +1,35 @@
-// backend/config.js
-require('dotenv').config();
+// backend/src/configs/config.js
+//
+// Hỗ trợ 2 môi trường:
+//  - Node thông thường (local/Docker): đọc biến môi trường từ file .env (dotenv)
+//  - Cloudflare Workers: worker.js gán vars/secrets vào globalThis.__WORKER_ENV__
 
-const requiredEnvVars = ['MONGO_URI', 'SECRET_KEY', 'PORT'];
+const onWorkers =
+  typeof globalThis.__WORKER_ENV__ === 'object' && globalThis.__WORKER_ENV__ !== null;
 
-const missing = requiredEnvVars.filter((key) => !process.env[key]);
+if (!onWorkers) {
+  require('dotenv').config();
+}
+
+const workerEnv = onWorkers ? globalThis.__WORKER_ENV__ : {};
+
+const getEnv = (key) => process.env[key] || workerEnv[key];
+
+const requiredEnvVars = ['MONGO_URI', 'SECRET_KEY'];
+const missing = requiredEnvVars.filter((key) => !getEnv(key));
 if (missing.length > 0) {
-  console.error('❌ Thiếu biến môi trường trong file .env:', missing.join(', '));
-  process.exit(1);
+  throw new Error(
+    `Thiếu biến môi trường: ${missing.join(', ')}. ` +
+      (onWorkers
+        ? 'Set trong Cloudflare dashboard → Worker → Settings → Variables and Secrets (hoặc chạy: npx wrangler secret put <TÊN_BIẾN>).'
+        : 'Kiểm tra lại file .env ở thư mục backend/.')
+  );
 }
 
 const config = {
-  port: Number(process.env.PORT) || 5000,
-  mongoUri: process.env.MONGO_URI,
-  secretKey: process.env.SECRET_KEY,
+  port: Number(getEnv('PORT')) || 5000,
+  mongoUri: getEnv('MONGO_URI'),
+  secretKey: getEnv('SECRET_KEY'),
 };
 
 module.exports = config;
